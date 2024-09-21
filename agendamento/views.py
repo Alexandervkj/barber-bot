@@ -36,3 +36,18 @@ class ServicoListView(ListView):
     model = Servico
     template_name = 'servico_list.html'
     context_object_name = 'servicos'
+
+class ProfissionalDeleteView(DeleteView):
+    model = Profissional
+    template_name = 'profissional_confirm_delete.html'
+    success_url = reverse_lazy('profissional_list')
+
+class AgendamentoDeleteView(DeleteView):
+    model = Agendamento
+    template_name = 'agendamento_confirm_delete.html'
+    success_url = reverse_lazy('agendamento_list')
+
+class ServicoDeleteView(DeleteView):
+    model = Servico
+    template_name = 'servico_confirm_delete.html'
+    success_url = reverse_lazy('servico_list')
