@@ -1,0 +1,16 @@
+<!-- templates/profissional_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Profissionais</title>
+</head>
+<body>
+    <h1>Lista de Profissionais</h1>
+    <ul>
+        {% for profissional in profissionais %}
+            <li>{{ profissional.nome }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'profissional_add' %}">Adicionar Profissional</a>
+</body>
+</html>

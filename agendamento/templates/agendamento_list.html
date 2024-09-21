@@ -1,0 +1,16 @@
+<!-- templates/agendamento_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Agendamentos</title>
+</head>
+<body>
+    <h1>Lista de Agendamentos</h1>
+    <ul>
+        {% for agendamento in agendamentos %}
+            <li>{{ agendamento.nome }} - {{ agendamento.servico }} - {{ agendamento.data }} - {{ agendamento.horario }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'agendamento_add' %}">Adicionar Agendamento</a>
+</body>
+</html>

@@ -1,0 +1,16 @@
+<!-- templates/servico_list.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Lista de Serviços</title>
+</head>
+<body>
+    <h1>Lista de Serviços</h1>
+    <ul>
+        {% for servico in servicos %}
+            <li>{{ servico.nome }}</li>
+        {% endfor %}
+    </ul>
+    <a href="{% url 'servico_add' %}">Adicionar Serviço</a>
+</body>
+</html>
