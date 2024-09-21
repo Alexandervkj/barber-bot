@@ -1,6 +1,5 @@
 # views.py
-from django.views.generic import ListView
-from django.views.generic.edit import CreateView
+from django.views.generic import ListView, CreateView
 from django.urls import reverse_lazy
 from .models import Profissional, Agendamento, Servico
 from .forms import ProfissionalForm, AgendamentoForm, ServicoForm
