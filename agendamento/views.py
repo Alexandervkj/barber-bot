@@ -3,6 +3,7 @@ from django.views.generic import ListView, CreateView, DeleteView
 from django.urls import reverse_lazy
 from .models import Profissional, Agendamento, Servico
 from .forms import ProfissionalForm, AgendamentoForm, ServicoForm
+from django.views.generic import TemplateView
 
 class ProfissionalCreateView(CreateView):
     model = Profissional
@@ -51,3 +52,6 @@ class ServicoDeleteView(DeleteView):
     model = Servico
     template_name = 'servico_confirm_delete.html'
     success_url = reverse_lazy('servico_list')
+
+class IndexView(TemplateView):
+    template_name = 'index.html'

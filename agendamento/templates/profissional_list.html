@@ -8,7 +8,7 @@
     <h1>Lista de Profissionais</h1>
     <ul>
         {% for profissional in profissionais %}
-            <li>{{ profissional.nome }}</li>
+            <li>{{ profissional.nome }} - <a href="{% url 'profissional_delete' profissional.pk %}">Excluir</a></li>
         {% endfor %}
     </ul>
     <a href="{% url 'profissional_add' %}">Adicionar Profissional</a>

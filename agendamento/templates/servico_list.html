@@ -8,7 +8,7 @@
     <h1>Lista de Serviços</h1>
     <ul>
         {% for servico in servicos %}
-            <li>{{ servico.nome }}</li>
+            <li>{{ servico.nome }} - <a href="{% url 'servico_delete' servico.pk %}">Excluir</a></li>
         {% endfor %}
     </ul>
     <a href="{% url 'servico_add' %}">Adicionar Serviço</a>

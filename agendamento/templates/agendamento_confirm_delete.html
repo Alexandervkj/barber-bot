@@ -1,0 +1,16 @@
+<!-- templates/agendamento_confirm_delete.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirmar Exclusão de Agendamento</title>
+</head>
+<body>
+    <h1>Confirmar Exclusão de Agendamento</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Tem certeza que deseja excluir o agendamento de "{{ object.nome }}"?</p>
+        <button type="submit">Sim, excluir</button>
+        <a href="{% url 'agendamento_list' %}">Cancelar</a>
+    </form>
+</body>
+</html>

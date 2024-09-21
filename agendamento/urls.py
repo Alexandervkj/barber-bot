@@ -3,10 +3,11 @@ from django.urls import path
 from .views import (
     ProfissionalCreateView, AgendamentoCreateView, ProfissionalListView, 
     AgendamentoListView, ServicoCreateView, ServicoListView, 
-    ProfissionalDeleteView, AgendamentoDeleteView, ServicoDeleteView
+    ProfissionalDeleteView, AgendamentoDeleteView, ServicoDeleteView, IndexView
 )
 
 urlpatterns = [
+    path('', IndexView.as_view(), name='index'),
     path('profissional/add/', ProfissionalCreateView.as_view(), name='profissional_add'),
     path('agendamento/add/', AgendamentoCreateView.as_view(), name='agendamento_add'),
     path('profissionais/', ProfissionalListView.as_view(), name='profissional_list'),

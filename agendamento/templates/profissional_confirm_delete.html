@@ -1,0 +1,16 @@
+<!-- templates/profissional_confirm_delete.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Confirmar Exclusão de Profissional</title>
+</head>
+<body>
+    <h1>Confirmar Exclusão de Profissional</h1>
+    <form method="post">
+        {% csrf_token %}
+        <p>Tem certeza que deseja excluir o profissional "{{ object.nome }}"?</p>
+        <button type="submit">Sim, excluir</button>
+        <a href="{% url 'profissional_list' %}">Cancelar</a>
+    </form>
+</body>
+</html>
