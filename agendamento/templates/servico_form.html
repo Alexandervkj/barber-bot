@@ -6,10 +6,11 @@
 </head>
 <body>
     <h1>Adicionar Serviço</h1>
-    <form method="post">
+    <form method="post" enctype="multipart/form-data">
         {% csrf_token %}
         {{ form.as_p }}
         <button type="submit">Salvar</button>
     </form>
+    <a href="{% url 'servico_list' %}">Voltar para a lista de serviços</a>
 </body>
 </html>

@@ -1,16 +1,40 @@
-<!-- templates/profissional_list.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Profissionais</title>
-</head>
-<body>
+
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Lista de Profissionais{% endblock %}
+
+{% block content %}
+<div class="container">
     <h1>Lista de Profissionais</h1>
-    <ul>
-        {% for profissional in profissionais %}
-            <li>{{ profissional.nome }} - <a href="{% url 'profissional_delete' profissional.pk %}">Excluir</a></li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'profissional_add' %}">Adicionar Profissional</a>
-</body>
-</html>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Imagem</th>
+                <th>Nome</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for profissional in profissionais %}
+            <tr>
+                <td>
+                    {% if profissional.imagem %}
+                    <img src="{{ profissional.imagem.url }}" alt="{{ profissional.nome }}" width="100">
+                    {% else %}
+                    <img src="{% static 'servicos/sem-imagem.jpg' %}" alt="Imagem padrão" width="100">
+                    {% endif %}
+                </td>
+                <td>{{ profissional.nome }}</td>
+                <td>
+                    <a href="{% url 'profissional_update' profissional.pk %}">Editar</a>
+                    <a href="{% url 'profissional_delete' profissional.pk %}">Excluir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'profissional_add' %}" class="btn btn-primary">Adicionar Profissional</a>  <!-- Botão para adicionar profissional -->
+</div>
+{% endblock %}

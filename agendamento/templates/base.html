@@ -1,0 +1,37 @@
+<!-- templates/base.html -->
+<!DOCTYPE html>
+<html>
+<head>
+    <title>{% block title %}Barber Bot{% endblock %}</title>
+    {% load static %}
+    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
+</head>
+<body>
+    <header>
+        <h1>Barber Bot</h1>
+        <nav>
+            <ul>
+                <li><a href="{% url 'index' %}">Home</a></li>
+                <li><a href="{% url 'profissional_list' %}">Profissionais</a></li>
+                <li><a href="{% url 'agendamento_list' %}">Agendamentos</a></li>
+                <li><a href="{% url 'servico_list' %}">Serviços</a></li>
+                <li><a href="{% url 'dia_funcionamento_list' %}">Dias de Funcionamento</a></li>
+                <li><a href="{% url 'horario_funcionamento_list' %}">Horários de Funcionamento</a></li>
+            </ul>
+        </nav>
+    </header>
+    <main>
+        {% if messages %}
+            <div class="messages">
+                {% for message in messages %}
+                    <div class="message {{ message.tags }}">{{ message }}</div>
+                {% endfor %}
+            </div>
+        {% endif %}
+        {% block content %}{% endblock %}
+    </main>
+    <footer>
+        <p>&copy; 2024 Barber Bot. Todos os direitos reservados.</p>
+    </footer>
+</body>
+</html>

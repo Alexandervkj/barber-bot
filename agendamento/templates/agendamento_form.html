@@ -1,15 +1,37 @@
 <!-- templates/agendamento_form.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Adicionar Agendamento</title>
-</head>
-<body>
-    <h1>Adicionar Agendamento</h1>
+{% extends 'base.html' %}
+
+{% block title %}Agendar Serviço{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Agendar Serviço</h1>
     <form method="post">
         {% csrf_token %}
-        {{ form.as_p }}
-        <button type="submit">Salvar</button>
+        <div class="form-group">
+            <label for="id_profissional">Profissional:</label>
+            {{ form.profissional }}
+        </div>
+        <div class="form-group">
+            <label for="id_data">Data:</label>
+            <div>
+                {% for value, label in form.data.field.choices %}
+                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id_data').value='{{ value }}'">{{ label }}</button>
+                {% endfor %}
+            </div>
+            {{ form.data }}
+        </div>
+        <div class="form-group">
+            <label for="id_horario">Horário:</label>
+            <div>
+                {% for value, label in form.horario.field.choices %}
+                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id_horario').value='{{ value }}'">{{ label }}</button>
+                {% endfor %}
+            </div>
+            {{ form.horario }}
+        </div>
+        <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
-</body>
-</html>
+    <a href="{% url 'agendamento_list' %}" class="btn btn-secondary">Voltar para a lista de agendamentos</a>
+</div>
+{% endblock %}

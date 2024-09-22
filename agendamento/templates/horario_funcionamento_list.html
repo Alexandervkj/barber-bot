@@ -1,0 +1,28 @@
+{% extends 'base.html' %}
+
+{% block title %}Horários de Funcionamento{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Horários de Funcionamento</h1>
+    <a href="{% url 'horario_funcionamento_add' %}" class="btn btn-primary">Adicionar Horário de Funcionamento</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Dia</th>
+                <th>Horário Início</th>
+                <th>Horário Fim</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for horario in horarios %}
+            <tr>
+                <td>{{ horario.dia.get_dia_display }}</td>
+                <td>{{ horario.horario_inicio }}</td>
+                <td>{{ horario.horario_fim }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}

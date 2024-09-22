@@ -1,16 +1,19 @@
 <!-- templates/servico_list.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Serviços</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Serviços{% endblock %}
+
+{% block content %}
+<div class="container">
     <h1>Lista de Serviços</h1>
     <ul>
         {% for servico in servicos %}
-            <li>{{ servico.nome }} - <a href="{% url 'servico_delete' servico.pk %}">Excluir</a></li>
+            <li>
+                <img src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" style="width:100px;height:100px;">
+                {{ servico.nome }} - R$ {{ servico.preco }} - <a href="{% url 'servico_delete' servico.pk %}">Excluir</a>
+            </li>
         {% endfor %}
     </ul>
     <a href="{% url 'servico_add' %}">Adicionar Serviço</a>
-</body>
-</html>
+</div>
+{% endblock %}

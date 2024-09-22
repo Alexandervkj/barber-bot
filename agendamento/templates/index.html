@@ -1,18 +1,15 @@
 <!-- templates/index.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Página Principal</title>
-    <link rel="stylesheet" type="text/css" href="{% static 'css/styles.css' %}">
-</head>
-<body>
-    <div class="container">
-        <h1>Página Principal</h1>
-        <ul>
-            <li><a href="{% url 'profissional_list' %}">Lista de Profissionais</a></li>
-            <li><a href="{% url 'agendamento_list' %}">Lista de Agendamentos</a></li>
-            <li><a href="{% url 'servico_list' %}">Lista de Serviços</a></li>
-        </ul>
-    </div>
-</body>
-</html>
+{% extends 'base.html' %}
+
+{% block title %}Página Principal{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Página Principal</h1>
+    <ul>
+        <li><a href="{% url 'profissional_list' %}">Lista de Profissionais</a></li>
+        <li><a href="{% url 'agendamento_list' %}">Lista de Agendamentos</a></li>
+        <li><a href="{% url 'servico_list' %}">Lista de Serviços</a></li>
+    </ul>
+</div>
+{% endblock %}

@@ -1,16 +1,38 @@
 <!-- templates/agendamento_list.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Lista de Agendamentos</title>
-</head>
-<body>
+{% extends 'base.html' %}
+
+{% block title %}Lista de Agendamentos{% endblock %}
+
+{% block content %}
+<div class="container">
     <h1>Lista de Agendamentos</h1>
-    <ul>
-        {% for agendamento in agendamentos %}
-            <li>{{ agendamento.nome }} - {{ agendamento.servico }} - {{ agendamento.data }} - {{ agendamento.horario }} - <a href="{% url 'agendamento_delete' agendamento.pk %}">Excluir</a></li>
-        {% endfor %}
-    </ul>
+    <table>
+        <thead>
+            <tr>
+                <th>Nome</th>
+                <th>Serviço</th>
+                <th>Profissional</th>
+                <th>Data</th>
+                <th>Horário</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for agendamento in agendamentos %}
+                <tr>
+                    <td>{{ agendamento.nome }}</td>
+                    <td>{{ agendamento.servico.nome }}</td>
+                    <td>{{ agendamento.profissional.nome }}</td>
+                    <td>{{ agendamento.data|date:"d/m/Y" }}</td>
+                    <td>{{ agendamento.horario|time:"H:i" }}</td>
+                    <td>
+                        <a href="{% url 'agendamento_delete' agendamento.pk %}">Excluir</a> |
+                        <a href="{% url 'agendamento_edit' agendamento.pk %}">Editar</a>
+                    </td>
+                </tr>
+            {% endfor %}
+        </tbody>
+    </table>
     <a href="{% url 'agendamento_add' %}">Adicionar Agendamento</a>
-</body>
-</html>
+</div>
+{% endblock %}

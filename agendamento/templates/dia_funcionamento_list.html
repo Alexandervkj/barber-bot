@@ -1,0 +1,24 @@
+{% extends 'base.html' %}
+
+{% block title %}Dias de Funcionamento{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Dias de Funcionamento</h1>
+    <a href="{% url 'dia_funcionamento_add' %}" class="btn btn-primary">Adicionar Dia de Funcionamento</a>
+    <table>
+        <thead>
+            <tr>
+                <th>Dia</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for dia in dias %}
+            <tr>
+                <td>{{ dia.get_dia_display }}</td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+</div>
+{% endblock %}
