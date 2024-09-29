@@ -1,28 +1,35 @@
 {% extends 'base.html' %}
+{% load static %}
 
-{% block title %}Horários de Funcionamento{% endblock %}
+{% block title %}Lista de Horários de Funcionamento{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Horários de Funcionamento</h1>
-    <a href="{% url 'horario_funcionamento_add' %}" class="btn btn-primary">Adicionar Horário de Funcionamento</a>
+    <h1>Lista de Horários de Funcionamento</h1>
+    
     <table>
         <thead>
             <tr>
-                <th>Dia</th>
-                <th>Horário Início</th>
-                <th>Horário Fim</th>
+                <th>Dia da Semana</th>
+                <th>Hora de Início</th>
+                <th>Hora de Término</th>
+                <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for horario in horarios %}
             <tr>
-                <td>{{ horario.dia.get_dia_display }}</td>
-                <td>{{ horario.horario_inicio }}</td>
-                <td>{{ horario.horario_fim }}</td>
+                <td>{{ horario.dia_semana }}</td>
+                <td>{{ horario.hora_inicio }}</td>
+                <td>{{ horario.hora_termino }}</td>
+                <td>
+                    <a href="{% url 'horario_funcionamento_update' horario.pk %}">Editar</a>
+                    <a href="{% url 'horario_funcionamento_delete' horario.pk %}">Excluir</a>
+                </td>
             </tr>
             {% endfor %}
         </tbody>
     </table>
+    <a href="{% url 'horario_funcionamento_add' %}" class="btn btn-primary">Adicionar Horário</a>
 </div>
 {% endblock %}

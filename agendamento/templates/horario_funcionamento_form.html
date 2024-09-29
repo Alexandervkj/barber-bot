@@ -1,14 +1,14 @@
 {% extends 'base.html' %}
 
-{% block title %}Adicionar Horário de Funcionamento{% endblock %}
+{% block title %}Adicionar/Editar Horário de Funcionamento{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Adicionar Horário de Funcionamento</h1>
+    <h1>{% if form.instance.pk %}Editar{% else %}Adicionar{% endif %} Horário de Funcionamento</h1>
     <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit" class="btn btn-primary">Adicionar</button>
+        <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Atualizar{% else %}Adicionar{% endif %}</button>
     </form>
 </div>
 {% endblock %}

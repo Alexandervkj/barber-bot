@@ -1,16 +1,14 @@
-<!-- templates/servico_form.html -->
-<!DOCTYPE html>
-<html>
-<head>
-    <title>Adicionar Serviço</title>
-</head>
-<body>
-    <h1>Adicionar Serviço</h1>
-    <form method="post" enctype="multipart/form-data">
+{% extends 'base.html' %}
+
+{% block title %}Adicionar/Editar Serviço{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>{% if form.instance.pk %}Editar{% else %}Adicionar{% endif %} Serviço</h1>
+    <form method="post">
         {% csrf_token %}
         {{ form.as_p }}
-        <button type="submit">Salvar</button>
+        <button type="submit" class="btn btn-primary">{% if form.instance.pk %}Atualizar{% else %}Adicionar{% endif %}</button>
     </form>
-    <a href="{% url 'servico_list' %}">Voltar para a lista de serviços</a>
-</body>
-</html>
+</div>
+{% endblock %}

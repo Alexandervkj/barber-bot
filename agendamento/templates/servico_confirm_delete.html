@@ -1,16 +1,15 @@
-<!-- templates/servico_confirm_delete.html -->
 {% extends 'base.html' %}
 
-{% block title %}Confirmar Exclusão{% endblock %}
+{% block title %}Confirmar Exclusão de Serviço{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Confirmar Exclusão</h1>
+    <h1>Confirmar Exclusão de Serviço</h1>
     <p>Tem certeza de que deseja excluir o serviço "{{ object.nome }}"?</p>
     <form method="post">
         {% csrf_token %}
-        <button type="submit">Confirmar</button>
+        <button type="submit" class="btn btn-danger">Excluir</button>
+        <a href="{% url 'servico_list' %}" class="btn btn-secondary">Cancelar</a>
     </form>
-    <a href="{% url 'servico_list' %}">Cancelar</a>
 </div>
 {% endblock %}

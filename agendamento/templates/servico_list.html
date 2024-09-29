@@ -1,19 +1,41 @@
-<!-- templates/servico_list.html -->
 {% extends 'base.html' %}
+{% load static %}
 
 {% block title %}Lista de Serviços{% endblock %}
 
 {% block content %}
 <div class="container">
     <h1>Lista de Serviços</h1>
-    <ul>
-        {% for servico in servicos %}
-            <li>
-                <img src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" style="width:100px;height:100px;">
-                {{ servico.nome }} - R$ {{ servico.preco }} - <a href="{% url 'servico_delete' servico.pk %}">Excluir</a>
-            </li>
-        {% endfor %}
-    </ul>
-    <a href="{% url 'servico_add' %}">Adicionar Serviço</a>
+    
+    <table>
+        <thead>
+            <tr>
+                <th>Imagem</th>
+                <th>Nome</th>
+                <th>Duração</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody>
+            {% for servico in servicos %}
+            <tr>
+                <td>
+                    {% if servico.imagem %}
+                    <img src="{{ servico.imagem.url }}" alt="{{ servico.nome }}" width="100">
+                    {% else %}
+                    <img src="{% static 'images/sem-imagem.jpg' %}" alt="Imagem padrão" width="100">
+                    {% endif %}
+                </td>
+                <td>{{ servico.nome }}</td>
+                <td>{{ servico.duracao }}</td>
+                <td>
+                    <a href="{% url 'servico_update' servico.pk %}">Editar</a>
+                    <a href="{% url 'servico_delete' servico.pk %}">Excluir</a>
+                </td>
+            </tr>
+            {% endfor %}
+        </tbody>
+    </table>
+    <a href="{% url 'servico_add' %}" class="btn btn-primary">Adicionar Serviço</a>
 </div>
 {% endblock %}

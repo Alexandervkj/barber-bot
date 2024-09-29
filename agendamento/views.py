@@ -1,4 +1,5 @@
 # views.py
+from django.contrib.auth.mixins import LoginRequiredMixin
 from django.views.generic import ListView, CreateView, DeleteView, TemplateView, UpdateView
 from django.urls import reverse_lazy
 from .models import Profissional, Agendamento, Servico, DiaFuncionamento, HorarioFuncionamento
@@ -7,7 +8,7 @@ from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django import forms
 
-class ProfissionalCreateView(CreateView):
+class ProfissionalCreateView(LoginRequiredMixin, CreateView):
     model = Profissional
     form_class = ProfissionalForm
     template_name = 'profissional_form.html'
@@ -41,7 +42,7 @@ class AgendamentoCreateView(CreateView):
         messages.success(self.request, 'Agendamento adicionado com sucesso!')
         return super().form_valid(form)
     
-class ServicoCreateView(CreateView):
+class ServicoCreateView(LoginRequiredMixin, CreateView):
     model = Servico
     form_class = ServicoForm
     template_name = 'servico_form.html'
@@ -54,12 +55,12 @@ class ServicoCreateView(CreateView):
 class IndexView(TemplateView):
     template_name = 'index.html'
 
-class ProfissionalListView(ListView):
+class ProfissionalListView(LoginRequiredMixin, ListView):
     model = Profissional
     template_name = 'profissional_list.html'
     context_object_name = 'profissionais'
 
-class ServicoListView(ListView):
+class ServicoListView(LoginRequiredMixin, ListView):
     model = Servico
     template_name = 'servico_list.html'
     context_object_name = 'servicos'
@@ -134,13 +135,65 @@ class ProfissionalUpdateView(UpdateView):
     def form_valid(self, form):
         messages.success(self.request, 'Profissional atualizado com sucesso!')
         return super().form_valid(form)
+    
+class ServicoUpdateView(LoginRequiredMixin, UpdateView):
+    model = Servico
+    form_class = ServicoForm
+    template_name = 'servico_form.html'
+    success_url = reverse_lazy('servico_list')
 
-class DiaFuncionamentoListView(ListView):
+    def form_valid(self, form):
+        messages.success(self.request, 'Serviço atualizado com sucesso!')
+        return super().form_valid(form)
+
+class HorarioFuncionamentoListView(LoginRequiredMixin, ListView):
+    model = HorarioFuncionamento
+    template_name = 'horario_funcionamento_list.html'
+    context_object_name = 'horarios'
+
+class HorarioFuncionamentoCreateView(LoginRequiredMixin, CreateView):
+    model = HorarioFuncionamento
+    form_class = HorarioFuncionamentoForm
+    template_name = 'horario_funcionamento_form.html'
+    success_url = reverse_lazy('horario_funcionamento_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Horário de funcionamento adicionado com sucesso!')
+        return super().form_valid(form)
+
+class HorarioFuncionamentoUpdateView(LoginRequiredMixin, UpdateView):
+    model = HorarioFuncionamento
+    form_class = HorarioFuncionamentoForm
+    template_name = 'horario_funcionamento_form.html'
+    success_url = reverse_lazy('horario_funcionamento_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Horário de funcionamento atualizado com sucesso!')
+        return super().form_valid(form)
+
+class HorarioFuncionamentoDeleteView(LoginRequiredMixin, DeleteView):    
+    model = HorarioFuncionamento
+    template_name = 'horario_funcionamento_confirm_delete.html'
+    success_url = reverse_lazy('horario_funcionamento_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Horário de funcionamento excluído com sucesso!')
+        return super().delete(request, *args, **kwargs)
+    model = HorarioFuncionamento
+    form_class = HorarioFuncionamentoForm
+    template_name = 'horario_funcionamento_form.html'
+    success_url = reverse_lazy('horario_funcionamento_list')
+
+    def form_valid(self, form):
+        messages.success(self.request, 'Horário de funcionamento adicionado com sucesso!')
+        return super().form_valid(form)
+
+class DiaFuncionamentoListView(LoginRequiredMixin, ListView):
     model = DiaFuncionamento
     template_name = 'dia_funcionamento_list.html'
     context_object_name = 'dias'
 
-class DiaFuncionamentoCreateView(CreateView):
+class DiaFuncionamentoCreateView(LoginRequiredMixin, CreateView):
     model = DiaFuncionamento
     form_class = DiaFuncionamentoForm
     template_name = 'dia_funcionamento_form.html'
@@ -150,17 +203,21 @@ class DiaFuncionamentoCreateView(CreateView):
         messages.success(self.request, 'Dia de funcionamento adicionado com sucesso!')
         return super().form_valid(form)
 
-class HorarioFuncionamentoListView(ListView):
-    model = HorarioFuncionamento
-    template_name = 'horario_funcionamento_list.html'
-    context_object_name = 'horarios'
-
-class HorarioFuncionamentoCreateView(CreateView):
-    model = HorarioFuncionamento
-    form_class = HorarioFuncionamentoForm
-    template_name = 'horario_funcionamento_form.html'
-    success_url = reverse_lazy('horario_funcionamento_list')
+class DiaFuncionamentoUpdateView(LoginRequiredMixin, UpdateView):
+    model = DiaFuncionamento
+    form_class = DiaFuncionamentoForm
+    template_name = 'dia_funcionamento_form.html'
+    success_url = reverse_lazy('dia_funcionamento_list')
 
     def form_valid(self, form):
-        messages.success(self.request, 'Horário de funcionamento adicionado com sucesso!')
+        messages.success(self.request, 'Dia de funcionamento atualizado com sucesso!')
         return super().form_valid(form)
+
+class DiaFuncionamentoDeleteView(LoginRequiredMixin, DeleteView):
+    model = DiaFuncionamento
+    template_name = 'dia_funcionamento_confirm_delete.html'
+    success_url = reverse_lazy('dia_funcionamento_list')
+
+    def delete(self, request, *args, **kwargs):
+        messages.success(self.request, 'Dia de funcionamento excluído com sucesso!')
+        return super().delete(request, *args, **kwargs)
