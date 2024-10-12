@@ -18,8 +18,6 @@
                 <li><a href="{% url 'profissional_list' %}">Profissionais</a></li>
                 <li><a href="{% url 'agendamento_list' %}">Agendamentos</a></li>
                 <li><a href="{% url 'servico_list' %}">Serviços</a></li>
-                <li><a href="{% url 'dia_funcionamento_list' %}">Dias de Funcionamento</a></li>
-                <li><a href="{% url 'horario_funcionamento_list' %}">Horários de Funcionamento</a></li>
                 {% if user.is_authenticated %}
                     <li>
                         <form method="post" action="{% url 'logout' %}">

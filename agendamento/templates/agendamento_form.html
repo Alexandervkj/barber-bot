@@ -3,76 +3,90 @@
 {% block title %}Agendar Serviço{% endblock %}
 
 {% block content %}
-<div class="container">
-    <h2>Agendar Serviço</h2>
-    <form method="post">
-        {% csrf_token %}
-        <div class="form-group">
-            <label for="id_nome">Nome:</label>
-            {{ form.nome }}
-        </div>
-        <div class="form-group">
-            <label for="id_servico">Serviço:</label>
-            {{ form.servico }}
-        </div>
-        <div class="form-group">
-            <label for="id_profissional">Profissional:</label>
-            {{ form.profissional }}
-        </div>
-        <div class="form-group">
-            <label for="id_data">Data:</label>
-            {{ form.data }}
-        </div>
-        <div class="form-group">
-            <label for="id_horario">Horário:</label>
-            <div id="horarios-disponiveis">
-                {% for value, label in form.horario.field.choices %}
-                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id_horario').value='{{ value }}'">{{ label }}</button>
-                {% endfor %}
-            </div>
-            {{ form.horario }}
-        </div>
-        <div class="form-group">
-            <label for="id_telefone">Telefone:</label>
-            {{ form.telefone }}
-        </div>
-        <button type="submit" class="btn btn-primary">Agendar</button>
-    </form>
-    <a href="{% url 'agendamento_list' %}" class="btn btn-secondary">Voltar para a lista de agendamentos</a>
-</div>
+<h2>Agendar Serviço</h2>
+<form method="post" id="agendamento-form">
+    {% csrf_token %}
+    {{ form.non_field_errors }}
+    <div>
+        <label for="id_nome">Nome:</label>
+        {{ form.nome }}
+    </div>
+    <div>
+        <label for="id_servico">Serviço:</label>
+        {{ form.servico }}
+    </div>
+    <div>
+        <label for="id_profissional">Profissional:</label>
+        {{ form.profissional }}
+    </div>
+    <div>
+        <label for="id_telefone">Telefone:</label>
+        {{ form.telefone }}
+    </div>
+    <div id="calendar-carousel" class="carousel">
+        <!-- Calendário será gerado dinamicamente aqui -->
+    </div>
+    <div id="horarios-disponiveis" class="horarios-grid">
+        <!-- Horários disponíveis serão gerados dinamicamente aqui -->
+    </div>
+    <input type="hidden" id="id_data" name="data">
+    <input type="hidden" id="id_horario" name="horario">
+    <button type="submit">Agendar</button>
+</form>
 
 <script>
 document.addEventListener('DOMContentLoaded', function() {
     const servicoField = document.getElementById('id_servico');
+    const profissionalField = document.getElementById('id_profissional');
     const dataField = document.getElementById('id_data');
-    const horariosDiv = document.getElementById('horarios-disponiveis');
     const horarioField = document.getElementById('id_horario');
+    const calendarCarousel = document.getElementById('calendar-carousel');
+    const horariosGrid = document.getElementById('horarios-disponiveis');
+
+    function generateCalendar() {
+        const today = new Date();
+        for (let i = 0; i < 45; i++) {
+            const date = new Date(today);
+            date.setDate(today.getDate() + i);
+            const button = document.createElement('button');
+            button.classList.add('calendar-button');
+            button.textContent = date.toDateString();
+            button.dataset.date = date.toISOString().split('T')[0];
+            button.addEventListener('click', function() {
+                dataField.value = this.dataset.date;
+                updateHorarios();
+            });
+            calendarCarousel.appendChild(button);
+        }
+    }
 
     function updateHorarios() {
         const servicoId = servicoField.value;
+        const profissionalId = profissionalField.value;
         const data = dataField.value;
 
-        if (servicoId && data) {
-            fetch(`/get_horarios_disponiveis/?servico=${servicoId}&data=${data}`)
+        if (servicoId && profissionalId && data) {
+            fetch(`/horarios-disponiveis/?servico=${servicoId}&profissional=${profissionalId}&data=${data}`)
                 .then(response => response.json())
                 .then(data => {
-                    horariosDiv.innerHTML = '';
+                    horariosGrid.innerHTML = '';
                     data.horarios.forEach(horario => {
                         const button = document.createElement('button');
-                        button.type = 'button';
-                        button.className = 'btn btn-outline-primary';
+                        button.classList.add('horario-button');
                         button.textContent = horario;
-                        button.onclick = () => {
-                            horarioField.value = horario;
-                        };
-                        horariosDiv.appendChild(button);
+                        button.dataset.horario = horario;
+                        button.addEventListener('click', function() {
+                            horarioField.value = this.dataset.horario;
+                        });
+                        horariosGrid.appendChild(button);
                     });
                 });
         }
     }
 
     servicoField.addEventListener('change', updateHorarios);
-    dataField.addEventListener('change', updateHorarios);
+    profissionalField.addEventListener('change', updateHorarios);
+    generateCalendar();
 });
 </script>
 {% endblock %}

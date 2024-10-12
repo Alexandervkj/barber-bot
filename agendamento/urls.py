@@ -7,10 +7,8 @@ from .views import (
     ProfissionalCreateView, AgendamentoCreateView, ProfissionalListView, 
     AgendamentoListView, ServicoCreateView, ServicoListView, 
     ProfissionalDeleteView, AgendamentoDeleteView, ServicoDeleteView,
-    IndexView, AgendamentoUpdateView, ProfissionalUpdateView, DiaFuncionamentoCreateView, 
-    HorarioFuncionamentoCreateView, DiaFuncionamentoListView, HorarioFuncionamentoListView, 
-    ServicoUpdateView, HorarioFuncionamentoDeleteView, HorarioFuncionamentoUpdateView,
-    DiaFuncionamentoUpdateView, DiaFuncionamentoDeleteView, admin_dashboard, GetHorariosDisponiveisView, ChatbotView
+    IndexView, AgendamentoUpdateView, ProfissionalUpdateView, 
+    ServicoUpdateView, admin_dashboard, GetHorariosDisponiveisView, ChatbotView
 )
 from django.contrib.auth import views as auth_views
 
@@ -31,14 +29,6 @@ urlpatterns = [
     path('servicos/edit/<int:pk>/', ServicoUpdateView.as_view(), name='servico_update'),
     path('accounts/login/', auth_views.LoginView.as_view(next_page='index'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
-    path('horarios-funcionamento/', HorarioFuncionamentoListView.as_view(), name='horario_funcionamento_list'),
-    path('horarios-funcionamento/add/', HorarioFuncionamentoCreateView.as_view(), name='horario_funcionamento_add'),
-    path('horarios-funcionamento/<int:pk>/edit/', HorarioFuncionamentoUpdateView.as_view(), name='horario_funcionamento_update'),
-    path('horarios-funcionamento/<int:pk>/delete/', HorarioFuncionamentoDeleteView.as_view(), name='horario_funcionamento_delete'),
-    path('dias-funcionamento/', DiaFuncionamentoListView.as_view(), name='dia_funcionamento_list'),
-    path('dias-funcionamento/add/', DiaFuncionamentoCreateView.as_view(), name='dia_funcionamento_add'),
-    path('dias-funcionamento/<int:pk>/edit/', DiaFuncionamentoUpdateView.as_view(), name='dia_funcionamento_update'),
-    path('dias-funcionamento/<int:pk>/delete/', DiaFuncionamentoDeleteView.as_view(), name='dia_funcionamento_delete'),
     path('get_horarios_disponiveis/', GetHorariosDisponiveisView.as_view(), name='get_horarios_disponiveis'),
     path('chatbot/', ChatbotView.as_view(), name='chatbot'),
 ]
