@@ -1,0 +1,58 @@
+{% extends 'base.html' %}
+{% load static %}
+
+{% block title %}Painel de Administração{% endblock %}
+
+{% block content %}
+<div class="container">
+    <h1>Painel de Administração</h1>
+    
+    <h2>Gerenciar Profissionais</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ profissional_form.as_p }}
+        <button type="submit" name="profissional_form" class="btn btn-primary">Salvar Profissional</button>
+    </form>
+    <ul>
+        {% for profissional in profissionais %}
+        <li>{{ profissional.nome }} - <a href="{% url 'profissional_update' profissional.pk %}">Editar</a> | <a href="{% url 'profissional_delete' profissional.pk %}">Excluir</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Gerenciar Serviços</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ servico_form.as_p }}
+        <button type="submit" name="servico_form" class="btn btn-primary">Salvar Serviço</button>
+    </form>
+    <ul>
+        {% for servico in servicos %}
+        <li>{{ servico.nome }} - <a href="{% url 'servico_update' servico.pk %}">Editar</a> | <a href="{% url 'servico_delete' servico.pk %}">Excluir</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Gerenciar Dias de Funcionamento</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ dia_funcionamento_form.as_p }}
+        <button type="submit" name="dia_funcionamento_form" class="btn btn-primary">Salvar Dia de Funcionamento</button>
+    </form>
+    <ul>
+        {% for dia in dias_funcionamento %}
+        <li>{{ dia.get_dia_display }} - <a href="{% url 'dia_funcionamento_update' dia.pk %}">Editar</a> | <a href="{% url 'dia_funcionamento_delete' dia.pk %}">Excluir</a></li>
+        {% endfor %}
+    </ul>
+
+    <h2>Gerenciar Horários de Funcionamento</h2>
+    <form method="post">
+        {% csrf_token %}
+        {{ horario_funcionamento_form.as_p }}
+        <button type="submit" name="horario_funcionamento_form" class="btn btn-primary">Salvar Horário de Funcionamento</button>
+    </form>
+    <ul>
+        {% for horario in horarios_funcionamento %}
+        <li>{{ horario.dia.get_dia_display }} - {{ horario.horario_inicio }} às {{ horario.horario_fim }} - <a href="{% url 'horario_funcionamento_update' horario.pk %}">Editar</a> | <a href="{% url 'horario_funcionamento_delete' horario.pk %}">Excluir</a></li>
+        {% endfor %}
+    </ul>
+</div>
+{% endblock %}

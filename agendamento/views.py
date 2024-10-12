@@ -1,12 +1,17 @@
 # views.py
 from django.contrib.auth.mixins import LoginRequiredMixin
-from django.views.generic import ListView, CreateView, DeleteView, TemplateView, UpdateView
+from django.views.generic import ListView, CreateView, DeleteView, TemplateView, UpdateView, View
 from django.urls import reverse_lazy
 from .models import Profissional, Agendamento, Servico, DiaFuncionamento, HorarioFuncionamento
 from .forms import ProfissionalForm, AgendamentoForm, ServicoForm, AgendamentoSearchForm, DiaFuncionamentoForm, HorarioFuncionamentoForm
 from django.contrib.messages.views import SuccessMessageMixin
 from django.contrib import messages
 from django import forms
+from django.contrib.auth.decorators import login_required
+from django.shortcuts import render, redirect
+from datetime import datetime, date , timedelta
+from django.http import JsonResponse
+from django.shortcuts import get_object_or_404
 
 class ProfissionalCreateView(LoginRequiredMixin, CreateView):
     model = Profissional
@@ -24,22 +29,19 @@ class AgendamentoCreateView(CreateView):
     template_name = 'agendamento_form.html'
     success_url = reverse_lazy('agendamento_list')
 
-    def get_form(self, form_class=None):
-        form = super().get_form(form_class)
-        form.fields['data'].widget = forms.Select(choices=self.get_dias_disponiveis())
-        form.fields['horario'].widget = forms.Select(choices=self.get_horarios_disponiveis())
-        return form
-
-    def get_dias_disponiveis(self):
-        dias = DiaFuncionamento.objects.all()
-        return [(dia.dia, dia.get_dia_display()) for dia in dias]
-
-    def get_horarios_disponiveis(self):
-        horarios = HorarioFuncionamento.objects.all()
-        return [(horario.horario_inicio, f"{horario.horario_inicio} às {horario.horario_fim}") for horario in horarios]
-
     def form_valid(self, form):
-        messages.success(self.request, 'Agendamento adicionado com sucesso!')
+        servico = form.cleaned_data['servico']
+        data = form.cleaned_data['data']
+        horario = form.cleaned_data['horario']
+        duracao = servico.duracao
+        horario_fim = (datetime.combine(datetime.min, horario) + duracao).time()
+
+        # Verificar se o horário está disponível
+        agendamentos = Agendamento.objects.filter(data=data, horario__lt=horario_fim, horario__gte=horario)
+        if agendamentos.exists():
+            form.add_error('horario', 'O horário selecionado não está disponível.')
+            return self.form_invalid(form)
+
         return super().form_valid(form)
     
 class ServicoCreateView(LoginRequiredMixin, CreateView):
@@ -221,3 +223,70 @@ class DiaFuncionamentoDeleteView(LoginRequiredMixin, DeleteView):
     def delete(self, request, *args, **kwargs):
         messages.success(self.request, 'Dia de funcionamento excluído com sucesso!')
         return super().delete(request, *args, **kwargs)
+
+@login_required
+def admin_dashboard(request):
+    if request.method == 'POST':
+        if 'profissional_form' in request.POST:
+            profissional_form = ProfissionalForm(request.POST)
+            if profissional_form.is_valid():
+                profissional_form.save()
+                return redirect('admin_dashboard')
+        elif 'servico_form' in request.POST:
+            servico_form = ServicoForm(request.POST)
+            if servico_form.is_valid():
+                servico_form.save()
+                return redirect('admin_dashboard')
+        elif 'dia_funcionamento_form' in request.POST:
+            dia_funcionamento_form = DiaFuncionamentoForm(request.POST)
+            if dia_funcionamento_form.is_valid():
+                dia_funcionamento_form.save()
+                return redirect('admin_dashboard')
+        elif 'horario_funcionamento_form' in request.POST:
+            horario_funcionamento_form = HorarioFuncionamentoForm(request.POST)
+            if horario_funcionamento_form.is_valid():
+                horario_funcionamento_form.save()
+                return redirect('admin_dashboard')
+    else:
+        profissional_form = ProfissionalForm()
+        servico_form = ServicoForm()
+        dia_funcionamento_form = DiaFuncionamentoForm()
+        horario_funcionamento_form = HorarioFuncionamentoForm()
+
+    context = {
+        'profissional_form': profissional_form,
+        'servico_form': servico_form,
+        'dia_funcionamento_form': dia_funcionamento_form,
+        'horario_funcionamento_form': horario_funcionamento_form,
+        'profissionais': Profissional.objects.all(),
+        'servicos': Servico.objects.all(),
+        'dias_funcionamento': DiaFuncionamento.objects.all(),
+        'horarios_funcionamento': HorarioFuncionamento.objects.all(),
+    }
+    return render(request, 'admin_dashboard.html', context)
+
+class GetHorariosDisponiveisView(View):
+    def get(self, request, *args, **kwargs):
+        servico_id = request.GET.get('servico')
+        data_str = request.GET.get('data')
+        data = datetime.strptime(data_str, '%Y-%m-%d').date()
+        servico = get_object_or_404(Servico, id=servico_id)
+        horarios = self.get_horarios_disponiveis(servico, data)
+        horarios_str = [str(horario) for horario in horarios]
+        return JsonResponse({'horarios': horarios_str})
+
+    def get_horarios_disponiveis(self, servico, data):
+        horarios = []
+        hora_inicio = timedelta(hours=8)  # Exemplo: horário de início às 8h
+        hora_fim = timedelta(hours=18)  # Exemplo: horário de término às 18h
+        duracao = servico.duracao
+
+        while hora_inicio + duracao <= hora_fim:
+            if not Agendamento.objects.filter(data=data, horario=hora_inicio).exists():
+                horarios.append(hora_inicio)
+            hora_inicio += duracao
+
+        return horarios
+
+class ChatbotView(TemplateView):
+    template_name = 'chatbot.html'

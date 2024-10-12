@@ -1,37 +1,78 @@
-<!-- templates/agendamento_form.html -->
 {% extends 'base.html' %}
 
 {% block title %}Agendar Serviço{% endblock %}
 
 {% block content %}
 <div class="container">
-    <h1>Agendar Serviço</h1>
+    <h2>Agendar Serviço</h2>
     <form method="post">
         {% csrf_token %}
+        <div class="form-group">
+            <label for="id_nome">Nome:</label>
+            {{ form.nome }}
+        </div>
+        <div class="form-group">
+            <label for="id_servico">Serviço:</label>
+            {{ form.servico }}
+        </div>
         <div class="form-group">
             <label for="id_profissional">Profissional:</label>
             {{ form.profissional }}
         </div>
         <div class="form-group">
             <label for="id_data">Data:</label>
-            <div>
-                {% for value, label in form.data.field.choices %}
-                <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id_data').value='{{ value }}'">{{ label }}</button>
-                {% endfor %}
-            </div>
             {{ form.data }}
         </div>
         <div class="form-group">
             <label for="id_horario">Horário:</label>
-            <div>
+            <div id="horarios-disponiveis">
                 {% for value, label in form.horario.field.choices %}
                 <button type="button" class="btn btn-outline-primary" onclick="document.getElementById('id_horario').value='{{ value }}'">{{ label }}</button>
                 {% endfor %}
             </div>
             {{ form.horario }}
         </div>
+        <div class="form-group">
+            <label for="id_telefone">Telefone:</label>
+            {{ form.telefone }}
+        </div>
         <button type="submit" class="btn btn-primary">Agendar</button>
     </form>
     <a href="{% url 'agendamento_list' %}" class="btn btn-secondary">Voltar para a lista de agendamentos</a>
 </div>
+
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const servicoField = document.getElementById('id_servico');
+    const dataField = document.getElementById('id_data');
+    const horariosDiv = document.getElementById('horarios-disponiveis');
+    const horarioField = document.getElementById('id_horario');
+
+    function updateHorarios() {
+        const servicoId = servicoField.value;
+        const data = dataField.value;
+
+        if (servicoId && data) {
+            fetch(`/get_horarios_disponiveis/?servico=${servicoId}&data=${data}`)
+                .then(response => response.json())
+                .then(data => {
+                    horariosDiv.innerHTML = '';
+                    data.horarios.forEach(horario => {
+                        const button = document.createElement('button');
+                        button.type = 'button';
+                        button.className = 'btn btn-outline-primary';
+                        button.textContent = horario;
+                        button.onclick = () => {
+                            horarioField.value = horario;
+                        };
+                        horariosDiv.appendChild(button);
+                    });
+                });
+        }
+    }
+
+    servicoField.addEventListener('change', updateHorarios);
+    dataField.addEventListener('change', updateHorarios);
+});
+</script>
 {% endblock %}

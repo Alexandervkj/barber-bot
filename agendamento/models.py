@@ -1,5 +1,6 @@
 # models.py
 from django.db import models
+from datetime import timedelta
 
 class Profissional(models.Model):
     nome = models.CharField(max_length=100)
@@ -12,9 +13,11 @@ class Servico(models.Model):
     nome = models.CharField(max_length=100)
     preco = models.DecimalField(max_digits=10, decimal_places=2, default=0.00)
     imagem = models.ImageField(upload_to='servicos/', default='servicos/sem-imagem.jpg')
+    duracao = models.DurationField(default=timedelta(hours=1))  # Adicionando o campo de duração
 
     def __str__(self):
         return self.nome
+
 
 class Agendamento(models.Model):
     nome = models.CharField(max_length=100)

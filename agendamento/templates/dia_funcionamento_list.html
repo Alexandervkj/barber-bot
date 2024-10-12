@@ -10,18 +10,22 @@
     <table>
         <thead>
             <tr>
-                <th>Data</th>
+                <th>Dia da Semana</th>
                 <th>Ações</th>
             </tr>
         </thead>
         <tbody>
             {% for dia in dias %}
             <tr>
-                <td>{{ dia.data }}</td>
+                <td>{{ dia.get_dia_display }}</td>
                 <td>
                     <a href="{% url 'dia_funcionamento_update' dia.pk %}">Editar</a>
                     <a href="{% url 'dia_funcionamento_delete' dia.pk %}">Excluir</a>
                 </td>
+            </tr>
+            {% empty %}
+            <tr>
+                <td colspan="2">Nenhum dia de funcionamento encontrado.</td>
             </tr>
             {% endfor %}
         </tbody>
