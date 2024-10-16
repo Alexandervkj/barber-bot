@@ -8,7 +8,7 @@ from .views import (
     AgendamentoListView, ServicoCreateView, ServicoListView, 
     ProfissionalDeleteView, AgendamentoDeleteView, ServicoDeleteView,
     IndexView, AgendamentoUpdateView, ProfissionalUpdateView, 
-    ServicoUpdateView, admin_dashboard, GetHorariosDisponiveisView, ChatbotView
+    ServicoUpdateView, admin_dashboard, GetHorariosDisponiveisView, ChatbotView, ChatbotResponseView
 )
 from django.contrib.auth import views as auth_views
 
@@ -29,8 +29,9 @@ urlpatterns = [
     path('servicos/edit/<int:pk>/', ServicoUpdateView.as_view(), name='servico_update'),
     path('accounts/login/', auth_views.LoginView.as_view(next_page='index'), name='login'),
     path('accounts/logout/', auth_views.LogoutView.as_view(next_page='index'), name='logout'),
-    path('get_horarios_disponiveis/', GetHorariosDisponiveisView.as_view(), name='get_horarios_disponiveis'),
+    path('horarios-disponiveis/', GetHorariosDisponiveisView.as_view(), name='horarios-disponiveis'),
     path('chatbot/', ChatbotView.as_view(), name='chatbot'),
+    path('chatbot/response/', ChatbotResponseView.as_view(), name='chatbot_response'),
 ]
 
 if settings.DEBUG:

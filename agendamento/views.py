@@ -177,21 +177,108 @@ class GetHorariosDisponiveisView(View):
         servico = get_object_or_404(Servico, id=servico_id)
         profissional = get_object_or_404(Profissional, id=profissional_id)
         horarios = self.get_horarios_disponiveis(servico, data, profissional)
-        horarios_str = [str(horario) for horario in horarios]
+        horarios_str = [horario.strftime('%H:%M') for horario in horarios]
         return JsonResponse({'horarios': horarios_str})
 
     def get_horarios_disponiveis(self, servico, data, profissional):
         horarios = []
-        hora_inicio = timedelta(hours=8)  # Exemplo: horário de início às 8h
-        hora_fim = timedelta(hours=18)  # Exemplo: horário de término às 18h
+        hora_inicio = datetime.combine(data, datetime.min.time()) + timedelta(hours=8)  # Exemplo: horário de início às 8h
+        hora_fim = datetime.combine(data, datetime.min.time()) + timedelta(hours=18)  # Exemplo: horário de término às 18h
         duracao = servico.duracao
 
         while hora_inicio + duracao <= hora_fim:
-            if not Agendamento.objects.filter(data=data, horario=hora_inicio, profissional=profissional).exists():
-                horarios.append(hora_inicio)
+            if not Agendamento.objects.filter(data=data, horario=hora_inicio.time(), profissional=profissional).exists():
+                horarios.append(hora_inicio.time())
             hora_inicio += duracao
 
         return horarios
 
-class ChatbotView(TemplateView):
-    template_name = 'chatbot.html'
+
+class ChatbotView(View):
+    def get(self, request, *args, **kwargs):
+        return render(request, 'chatbot.html')
+
+class ChatbotResponseView(View):
+    def post(self, request, *args, **kwargs):
+        user_message = request.POST.get('message')
+        session = request.session
+
+        if 'stage' not in session:
+            session['stage'] = 'greeting'
+
+        response, next_message, stage = self.handle_message(user_message, session)
+        return JsonResponse({'response': response, 'next_message': next_message, 'stage': stage})
+
+    def handle_message(self, message, session):
+        stage = session['stage']
+        next_message = None
+
+        if stage == 'greeting':
+            session['stage'] = 'ask_name'
+            response = "Olá! Bem-vindo à nossa barbearia. Qual é o seu nome e sobrenome?"
+            return response, next_message, session['stage']
+
+        elif stage == 'ask_name':
+            session['name'] = message
+            session['stage'] = 'show_services'
+            response = f"Prazer em conhecê-lo, {message}! Aqui estão os serviços disponíveis:"
+            next_message = "Por favor, clique no serviço que deseja."
+            return response, next_message, session['stage']
+
+        elif stage == 'show_services':
+            session['servico'] = message
+            session['stage'] = 'show_professionals'
+            response = "Aqui estão os profissionais disponíveis:"
+            next_message = "Por favor, clique no profissional que deseja."
+            return response, next_message, session['stage']
+
+        elif stage == 'show_professionals':
+            session['profissional'] = message
+            session['stage'] = 'show_dates'
+            response = "Por favor, selecione uma data."
+            return response, next_message, session['stage']
+
+        elif stage == 'show_dates':
+            session['data'] = message
+            session['stage'] = 'show_times'
+            response = "Por favor, selecione um horário."
+            return response, next_message, session['stage']
+
+        elif stage == 'show_times':
+            session['horario'] = message
+            session['stage'] = 'ask_phone'
+            response = "Por favor, digite seu número de telefone."
+            return response, next_message, session['stage']
+
+        elif stage == 'ask_phone':
+            session['telefone'] = message
+            session['stage'] = 'confirm_appointment'
+            response = "Por favor, confirme seu agendamento."
+            return response, next_message, session['stage']
+
+        elif stage == 'confirm_appointment':
+            name = session.get('name')
+            servico_nome = session.get('servico')
+            profissional_nome = session.get('profissional')
+            data = session.get('data')
+            horario = session.get('horario')
+            telefone = session.get('telefone')
+
+            servico = get_object_or_404(Servico, nome=servico_nome)
+            profissional = get_object_or_404(Profissional, nome=profissional_nome)
+
+            Agendamento.objects.create(
+                nome=name,
+                servico=servico,
+                profissional=profissional,
+                data=data,
+                horario=horario,
+                telefone=telefone,
+                confirmacao=True
+            )
+
+            response = "Seu agendamento foi confirmado! Obrigado."
+            session.flush()
+            return response, next_message, None
+
+        return "Desculpe, não entendi sua mensagem.", next_message, session['stage']

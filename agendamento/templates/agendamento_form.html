@@ -1,92 +1,143 @@
-{% extends 'base.html' %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Chatbot</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+        }
+        .chat-container {
+            width: 80%;
+            margin: 0 auto;
+            border: 1px solid #ccc;
+            padding: 10px;
+            background-color: #f9f9f9;
+        }
+        .chat-history {
+            height: 300px;
+            overflow-y: scroll;
+            border-bottom: 1px solid #ccc;
+            margin-bottom: 10px;
+        }
+        .chat-message {
+            margin: 5px 0;
+        }
+        .chat-form {
+            display: flex;
+        }
+        .chat-form input[type="text"] {
+            flex: 1;
+            padding: 10px;
+            border: 1px solid #ccc;
+        }
+        .chat-form button {
+            padding: 10px;
+            border: none;
+            background-color: #007bff;
+            color: white;
+            cursor: pointer;
+        }
+        .carousel {
+            display: flex;
+            overflow-x: auto;
+            margin: 10px 0;
+        }
+        .carousel-item {
+            flex: 0 0 auto;
+            margin-right: 10px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+        }
+        .grid {
+            display: flex;
+            flex-wrap: wrap;
+        }
+        .grid-item {
+            flex: 1 0 21%;
+            margin: 5px;
+            padding: 10px;
+            border: 1px solid #ccc;
+            background-color: #fff;
+            cursor: pointer;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+    <div class="chat-container">
+        <div class="chat-history" id="chat-history">
+            <!-- Aqui vai o histórico de mensagens -->
+        </div>
+        <div class="chat-form" id="chat-form">
+            <!-- Aqui vai o formulário de entrada -->
+        </div>
+    </div>
 
-{% block title %}Agendar Serviço{% endblock %}
+    <script>
+        function addMessageToChat(user, message, isButton = false) {
+            const chatHistory = document.getElementById('chat-history');
+            const messageElement = document.createElement('div');
+            messageElement.classList.add('chat-message');
+            if (isButton) {
+                messageElement.innerHTML = `<button onclick="handleButtonClick('${message}')">${message}</button>`;
+            } else {
+                messageElement.innerHTML = `<strong>${user}:</strong> ${message}`;
+            }
+            chatHistory.appendChild(messageElement);
+            chatHistory.scrollTop = chatHistory.scrollHeight;
+        }
 
-{% block content %}
-<h2>Agendar Serviço</h2>
-<form method="post" id="agendamento-form">
-    {% csrf_token %}
-    {{ form.non_field_errors }}
-    <div>
-        <label for="id_nome">Nome:</label>
-        {{ form.nome }}
-    </div>
-    <div>
-        <label for="id_servico">Serviço:</label>
-        {{ form.servico }}
-    </div>
-    <div>
-        <label for="id_profissional">Profissional:</label>
-        {{ form.profissional }}
-    </div>
-    <div>
-        <label for="id_telefone">Telefone:</label>
-        {{ form.telefone }}
-    </div>
-    <div id="calendar-carousel" class="carousel">
-        <!-- Calendário será gerado dinamicamente aqui -->
-    </div>
-    <div id="horarios-disponiveis" class="horarios-grid">
-        <!-- Horários disponíveis serão gerados dinamicamente aqui -->
-    </div>
-    <input type="hidden" id="id_data" name="data">
-    <input type="hidden" id="id_horario" name="horario">
-    <button type="submit">Agendar</button>
-</form>
+        function handleButtonClick(message) {
+            if (message === 'Olá! Bem-vindo à nossa barbearia. Qual é o seu nome e sobrenome?') {
+                showNameInput();
+            }
+        }
 
-<script>
-document.addEventListener('DOMContentLoaded', function() {
-    const servicoField = document.getElementById('id_servico');
-    const profissionalField = document.getElementById('id_profissional');
-    const dataField = document.getElementById('id_data');
-    const horarioField = document.getElementById('id_horario');
-    const calendarCarousel = document.getElementById('calendar-carousel');
-    const horariosGrid = document.getElementById('horarios-disponiveis');
+        function showNameInput() {
+            const chatForm = document.getElementById('chat-form');
+            chatForm.innerHTML = `
+                <input type="text" id="user-name" placeholder="Digite seu nome e sobrenome...">
+                <button onclick="sendName()">Enviar</button>
+            `;
+        }
 
-    function generateCalendar() {
-        const today = new Date();
-        for (let i = 0; i < 45; i++) {
-            const date = new Date(today);
-            date.setDate(today.getDate() + i);
-            const button = document.createElement('button');
-            button.classList.add('calendar-button');
-            button.textContent = date.toDateString();
-            button.dataset.date = date.toISOString().split('T')[0];
-            button.addEventListener('click', function() {
-                dataField.value = this.dataset.date;
-                updateHorarios();
+        function sendName() {
+            const userName = document.getElementById('user-name').value;
+            if (userName.trim() !== '') {
+                addMessageToChat('Você', userName);
+                document.getElementById('chat-form').innerHTML = '';
+                sendMessageToServer(userName);
+            }
+        }
+
+        function sendMessageToServer(message) {
+            fetch("{% url 'chatbot_response' %}", {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                    'X-CSRFToken': '{{ csrf_token }}'
+                },
+                body: new URLSearchParams({
+                    'message': message
+                })
+            })
+            .then(response => response.json())
+            .then(data => {
+                addMessageToChat('Chatbot', data.response);
+                if (data.next_message) {
+                    addMessageToChat('Chatbot', data.next_message, true);
+                }
             });
-            calendarCarousel.appendChild(button);
         }
-    }
 
-    function updateHorarios() {
-        const servicoId = servicoField.value;
-        const profissionalId = profissionalField.value;
-        const data = dataField.value;
-
-        if (servicoId && profissionalId && data) {
-            fetch(`/horarios-disponiveis/?servico=${servicoId}&profissional=${profissionalId}&data=${data}`)
-                .then(response => response.json())
-                .then(data => {
-                    horariosGrid.innerHTML = '';
-                    data.horarios.forEach(horario => {
-                        const button = document.createElement('button');
-                        button.classList.add('horario-button');
-                        button.textContent = horario;
-                        button.dataset.horario = horario;
-                        button.addEventListener('click', function() {
-                            horarioField.value = this.dataset.horario;
-                        });
-                        horariosGrid.appendChild(button);
-                    });
-                });
-        }
-    }
-
-    servicoField.addEventListener('change', updateHorarios);
-    profissionalField.addEventListener('change', updateHorarios);
-    generateCalendar();
-});
-</script>
-{% endblock %}
+        // Iniciar a conversa
+        document.addEventListener('DOMContentLoaded', (event) => {
+            addMessageToChat('Chatbot', 'Olá! Bem-vindo à nossa barbearia. Qual é o seu nome e sobrenome?', true);
+        });
+    </script>
+</body>
+</html>
